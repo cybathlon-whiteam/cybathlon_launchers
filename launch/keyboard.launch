@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+	<node pkg="ros_cybathlon_interface" type="ros_cybathlon_interface" name="ros_cybathlon_interface" /> <!-- interface to the game node --> 
+	<node pkg="ros_control_interface" type="ros_control_keyboard" name="ros_control_keyboard" /> <!-- keyboard node --> 
+</launch>
