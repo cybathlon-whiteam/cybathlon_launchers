@@ -118,6 +118,6 @@
   <!-- <node name="rosneuro_reconf" pkg="rqt_reconfigure" type="rqt_reconfigure" output="screen" /> -->
 
 	<!-- Comunication between the neurodata and the game interface -->
-	<node pkg="ros_control_interface" type="ros_control_bci" name="ros_control_bci" output="screen" /> 
+	<node pkg="ros_cybathlon_interface" type="ros_control_bci" name="ros_control_bci" output="screen" /> 
 
 </launch>
