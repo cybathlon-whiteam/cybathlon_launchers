@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<launch>
+	<!-- acquisition arguments -->
+	<arg name="plugin" default='rosneuro::EGDDevice'/>
+	<arg name="devarg" default='gtec'/>
+	<arg name="framerate" default='16'/>
+	<arg name="samplerate" default='512'/>
+
+	<!-- recorder arguments -->
+  	<arg name="autostart" default='true'/>
+
+  	<arg name="subject" value="s16" />
+  	<arg name="modality"  value="offline"/>
+  	<arg name="task"      default="mi_bhbf"/>
+  	<arg name="extra"     default=""/>
+
+	<!-- Protocol parameters -->
+  	<rosparam param="/protocol/subject"	 subst_value="True">$(arg subject)</rosparam>
+  	<rosparam param="/protocol/modality" subst_value="True">$(arg modality)</rosparam>
+  	<rosparam param="/protocol/task"	 subst_value="True">$(arg task)</rosparam>
+  	<rosparam param="/protocol/extra"	 subst_value="True">$(arg extra)</rosparam>
+    
+	<!-- acquisition node -->
+	<node name="acquisition" pkg="rosneuro_acquisition" type="acquisition" output="screen">
+  	  <param name="~plugin" 	  value="$(arg plugin)"/>
+  	  <param name="~devarg" 	  value="$(arg devarg)"/>
+  	  <param name="~samplerate" value="$(arg samplerate)"/>
+  	  <param name="~framerate"  value="$(arg framerate)"/>
+  	</node>
+
+ <node name="neuroviz" pkg="rosneuro_visualizer" type="neuroviz" /> 
+
+</launch>
