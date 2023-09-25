@@ -36,7 +36,7 @@
 		
 		<!--  visual and command arguments -->
 		<arg name="threshold_hard"   	 default='0.95, 0.95'/>  
-		<arg name="threshold_soft"   	 default='0.65, 0.75'/>  
+		<arg name="threshold_soft"   	 default='0.80, 0.80'/>  
 		<arg name="threshold_final"   	 default='1.0, 1.0'/>  
 
 
@@ -88,16 +88,19 @@
 	
 	<node name="cybathlon_feedback" pkg="cybathlon_feedback" type="neurowheel"  output="screen" >
 		<param name="~threshold_hard" value="$(arg threshold_hard)"/>
-	   	<param name="~threshold_soft" value="$(arg threshold_soft)"/>
+	 	<param name="~threshold_soft" value="$(arg threshold_soft)"/>
 		<param name="~threshold_final" value="$(arg threshold_final)"/>
-    </node>
+  </node>
 
 	
 	<!-- Game controller for navigation -->
 	<node pkg="rosneuro_cybathlon_controller" type="navigation_controller" name="navigation_controller" output="screen">
-		 <rosparam param="is_control_discrete" subst_value="True">$(arg is_control_discrete)</rosparam>
+		<rosparam param="is_control_discrete" subst_value="True">$(arg is_control_discrete)</rosparam>
 		<rosparam param="classes" subst_value="True">$(arg classes)</rosparam>
-		<rosparam param="duration/boom" subst_value="True">3000</rosparam>
+    <rosparam param="duration/boom" subst_value="True">3000</rosparam>
+    <param name="~threshold_hard" value="$(arg threshold_hard)"/>
+	 	<param name="~threshold_soft" value="$(arg threshold_soft)"/>
+		<param name="~threshold_final" value="$(arg threshold_final)"/>
 	</node>
 
 	<!-- interface to the game -->
