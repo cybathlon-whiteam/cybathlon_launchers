@@ -90,8 +90,7 @@
 		<param name="~threshold_hard" value="$(arg threshold_hard)"/>
 	 	<param name="~threshold_soft" value="$(arg threshold_soft)"/>
 		<param name="~threshold_final" value="$(arg threshold_final)"/>
-  </node>
-
+    </node>
 	
 	<!-- Game controller for navigation -->
 	<node pkg="rosneuro_cybathlon_controller" type="navigation_controller" name="navigation_controller" output="screen">
