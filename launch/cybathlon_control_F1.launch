@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<launch>
+	
+	<!-- Feedback arguments -->
+		<arg name="subject"              default='f1'/>
+		<arg name="task"                 default="mi_rhlh"/>
+		<arg name="modality"             default='control'/>
+		<arg name="thresholds"           default='[0.7, 0.63]'/>
+		<arg name="classes"              default='[770, 769]'/>
+		<arg name="extra"     	          default=""/>
+		<arg name="game_address"         default='147.162.98.47'/>
+		<arg name="game_port"            default='59075'/>
+		<arg name="is_control_discrete"  default='True'/>
+
+	<!-- acquisition arguments -->
+		<arg name="plugin"               default='rosneuro::EGDDevice'/>
+		<arg name="devarg"               default='gtec'/>
+		<arg name="framerate"            default='16'/>
+		<arg name="samplerate"           default='512'/>
+			
+	<!-- recorder -->
+		<arg name="autostart"            default='true'/>
+		<arg name="filepath"             default='$(env HOME)/cybathlon/rosneuro_data' />
+
+	<!-- processing arguments -->
+		<arg name="lap_path"            default='$(env HOME)/cybathlon/rosneuro_data/laplacian/laplacian16.dat'/>
+		<arg name="decoder_path"        default='$(env HOME)/cybathlon/rosneuro_data/classifiers/f1_rhlh_20231003.smr.dat'/>
+		<arg name="n_channels"          default='16'/>
+
+	<!-- control framework arguments -->
+		<arg name="integratorplugin"    default="rosneuro::integrator::Exponential"/>
+		<arg name="alpha" 	    	 default='0.985'/>
+		<arg name="rejection" 		 default='0.6465'/>
+		
+		
+	<!--  visual and command arguments -->
+		<arg name="threshold_hard"   	 default='0.8, 0.75'/>  
+		<arg name="threshold_soft"   	 default='0.65, 0.55'/>  
+		<arg name="threshold_final"     default='1.0, 1.0'/>  
+		
+	 <!--  filter chain  -->
+		<rosparam command="load" file="$(find cybathlon_eog)/cfg/bandPassCybathlon.yaml"/>
+	
+	<!--   cybathlon_eog -->
+		<arg name="eog_threshold"      default='33'/>
+		<arg name="eog_left_channel"   default='12'/>
+		<arg name="time_eog"           default='2.0'/>
+		<arg name="eog_right_channel"  default='16'/>
+
+
+	<!-- protocol arguments -->
+			
+	<!-- Protocol parameters -->
+		<rosparam param="/protocol/subject"	 subst_value="True">$(arg subject)</rosparam>
+		<rosparam param="/protocol/modality" subst_value="True">$(arg modality)</rosparam>
+		<rosparam param="/protocol/task"	 subst_value="True">$(arg task)</rosparam>
+		<rosparam param="/protocol/extra"	 subst_value="True">$(arg extra)</rosparam>
+
+	<!-- aquisition node -->
+		<node name="acquisition" pkg="rosneuro_acquisition" type="acquisition" output="screen" >
+			<param name="~plugin" 	  value="$(arg plugin)"/>
+			<param name="~devarg" 	  value="$(arg devarg)"/>
+			<param name="~samplerate" value="$(arg samplerate)"/>
+			<param name="~framerate"  value="$(arg framerate)"/>
+		</node>
+	
+	<!-- recorder node -->
+		<node name="recorder" pkg="rosneuro_recorder" type="recorder" >
+			<param name="~autostart" value="$(arg autostart)"/>
+			<param name="~filepath" value="$(arg filepath)"/>
+		</node>
+  
+	<!-- processing node -->
+		<node name="smrbci" pkg="rosneuro_processing" type="test_smrbci" output="screen">
+			<param name="~lap_path" value="$(arg lap_path)"/>
+			<param name="~decoder_path" value="$(arg decoder_path)"/>
+			<param name="~n_channels" value="$(arg n_channels)"/>
+		</node>
+
+	<!-- integrator node -->
+		<node name="integrator" pkg="rosneuro_integrator" type="integrator" output="screen">
+		
+			<rosparam param="plugin" subst_value="True">$(arg integratorplugin)</rosparam>
+			<rosparam param="alpha" subst_value="True">$(arg alpha)</rosparam>
+			<rosparam param="rejection" subst_value="True">$(arg rejection)</rosparam>
+			
+			<remap from="/smr/neuroprediction" to="/smrbci/neuroprediction"/>
+			<remap from="/integrated" to="/integrator/neuroprediction"/>
+		</node> 
+
+  	<!-- cybathlon_feedback node -->
+		<node name="cybathlon_feedback" pkg="cybathlon_feedback" type="neurowheel"  output="screen" >
+			<param name="~threshold_hard" value="$(arg threshold_hard)"/>
+		 	<param name="~threshold_soft" value="$(arg threshold_soft)"/>
+			<param name="~threshold_final" value="$(arg threshold_final)"/>
+	    	</node>
+		
+	<!-- Game controller for navigation -->
+		<node pkg="rosneuro_cybathlon_controller" type="navigation_controller" name="navigation_controller" output="screen">
+			<rosparam param="is_control_discrete" subst_value="True">$(arg is_control_discrete)</rosparam>
+			<rosparam param="classes" subst_value="True">$(arg classes)</rosparam>
+	    		<rosparam param="duration/boom" subst_value="True">3000</rosparam>
+			<param name="~threshold_hard" value="$(arg threshold_hard)"/>
+		 	<param name="~threshold_soft" value="$(arg threshold_soft)"/>
+			<param name="~threshold_final" value="$(arg threshold_final)"/>
+		</node>
+
+	<!-- interface to the game -->
+		<node pkg="rosneuro_cybathlon_interface" type="gameinterface" name="gameinterface" output="screen">
+			<param name="~game_address" value="$(arg game_address)"/>
+			<param name="~game_port"  	value="$(arg game_port)"/>
+		</node>
+
+	<!-- reconfigure node -->
+		<node pkg="rqt_reconfigure" type="rqt_reconfigure" name="rqt_reconfigure" />
+
+	 <!--  filter chain  -->
+		<node name="filterchain_node" pkg="rosneuro_filters" type="filterchain_node" output="screen" >
+			<param name="configname" value="ButterworthBandPass" />
+		</node>	
+	
+	<!--   cybathlon_eog -->
+	   	<node pkg="cybathlon_eog" type="cybathlonEog_node" name="cybathlonEog_node" output="screen">
+			<param name="~eog_threshold"        value="$(arg eog_threshold)"/>
+			<param name="~time_eog"        value="$(arg time_eog)"/>
+			<param name="~eog_left_channel"  	value="$(arg eog_left_channel)"/>
+			<param name="~eog_right_channel"  	value="$(arg eog_right_channel)"/>
+		</node>
+
+</launch>
