@@ -114,6 +114,14 @@
 	<!-- reconfigure node -->
 		<node pkg="rqt_reconfigure" type="rqt_reconfigure" name="rqt_reconfigure" />
 
+    <!-- dynamic reconfigure nodes -->
+	<node pkg="cybathlon_auto_reconfigure" type="cybathlon_auto_reconfigure_node" name="cybathlon_auto_reconfigure" output="screen" >
+		<param name="~folder" value="$(find cybathlon_auto_reconfigure)"/>
+	</node>
+
+  <!-- auto reconfigure node -->
+  <node pkg="cybathlon_auto_reconfigure" type="cybathlon_auto_reconfigure.py" name="cybathlon_auto_reconfigure" />
+
 	 <!--  filter chain  -->
 		<node name="filterchain_node" pkg="rosneuro_filters" type="filterchain_node" output="screen" >
 			<param name="configname" value="ButterworthBandPass" />

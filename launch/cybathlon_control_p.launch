@@ -8,14 +8,14 @@
 		<arg name="thresholds"   default='[0.7, 0.7]'/>
 		<arg name="classes"      default='[773, 771]'/>
 		<arg name="extra"     	 default=""/>
-		<arg name="game_address" default='localhost'/>
+		<arg name="game_address" default='10.7.30.53'/>
 		<arg name="game_port" default='59075'/>
 		<arg name="is_control_discrete" default='True'/>
 
 	<!-- acquisition arguments -->
 		<arg name="plugin" default='rosneuro::EGDDevice'/>
 		<!-- <arg name="devarg" default='gtec'/> -->
-		 <arg name="devarg" default='/home/paolo/prova16ch.gdf' />
+    <arg name="devarg" default='/home/piero/data.gdf' />
 		<arg name="framerate"  default='16'/>
 		<arg name="samplerate" default='512'/>
 			
@@ -24,8 +24,8 @@
 		<arg name="filepath"  default='$(env HOME)' />
 
 	<!-- processing arguments -->
-		<arg name="lap_path"      default='/home/paolo/laplacians/laplacian16.dat'/>
-		<arg name="decoder_path"  default='/home/paolo/subjects/s3/s3_bhbf_20230206.smr.dat'/> 
+    <arg name="lap_path"      default='$(find cybathlon_launchers)/extra/laplacian/laplacian16.dat'/>
+		<arg name="decoder_path"  default='$(find cybathlon_launchers)/extra/smr/classifier16channels.dat'/> 
 		<arg name="n_channels"    default='16'/>
 
 	<!-- control framework arguments -->
@@ -49,7 +49,7 @@
 		<rosparam param="/protocol/extra"	 subst_value="True">$(arg extra)</rosparam>
 
 	<!-- aquisition node -->
-	<node name="acquisition" pkg="rosneuro_acquisition" type="acquisition" output="screen" >
+	<node name="acquisition" pkg="rosneuro_acquisition" type="acquisition"  >
 		<param name="~plugin" 	  value="$(arg plugin)"/>
 		<param name="~devarg" 	  value="$(arg devarg)"/>
 		<param name="~samplerate" value="$(arg samplerate)"/>
@@ -63,14 +63,14 @@
 	</node-->
   
 	<!-- processing node -->
-	<node name="smrbci" pkg="rosneuro_processing" type="test_smrbci" output="screen">
+	<node name="smrbci" pkg="rosneuro_processing" type="test_smrbci" >
 		<param name="~lap_path" value="$(arg lap_path)"/>
 		<param name="~decoder_path" value="$(arg decoder_path)"/>
 		<param name="~n_channels" value="$(arg n_channels)"/>
 	</node>
 
 	<!-- integrator node -->
-	<node name="integrator" pkg="rosneuro_integrator" type="integrator" output="screen">
+	<node name="integrator" pkg="rosneuro_integrator" type="integrator" >
 	
 		<rosparam param="plugin" subst_value="True">$(arg integratorplugin)</rosparam>
 		<rosparam param="alpha" subst_value="True">$(arg alpha)</rosparam>
@@ -80,13 +80,7 @@
 		<remap from="/integrated" to="/integrator/neuroprediction"/>
 	</node> 
 
-  	<!-- neurowheel node -->
-	 <!-- <node name="controlwheel" pkg="rosneuro_feedback_wheel" type="controlwheel"  output="screen">
-		 <rosparam param="thresholds" subst_value="True">$(arg thresholds)</rosparam>
-		 <rosparam param="classes" subst_value="True">$(arg classes)</rosparam>
-  	</node> -->
-	
-	<node name="cybathlon_feedback" pkg="cybathlon_feedback" type="neurowheel"  output="screen" >
+	<node name="cybathlon_feedback" pkg="cybathlon_feedback" type="neurowheel" output="screen">
 		<param name="~threshold_hard" value="$(arg threshold_hard)"/>
 	 	<param name="~threshold_soft" value="$(arg threshold_soft)"/>
 		<param name="~threshold_final" value="$(arg threshold_final)"/>
@@ -103,17 +97,20 @@
 	</node>
 
 	<!-- interface to the game -->
-	<node pkg="rosneuro_cybathlon_interface" type="gameinterface" name="gameinterface" output="screen">
+	<node pkg="rosneuro_cybathlon_interface" type="gameinterface" name="gameinterface" >
 		<param name="~game_address" value="$(arg game_address)"/>
 		<param name="~game_port"  	value="$(arg game_port)"/>
 	</node>
 
 	<!-- reconfigure node -->
-	<node pkg="rqt_reconfigure" type="rqt_reconfigure" name="rqt_reconfigure" />
+  <node pkg="rqt_reconfigure" type="rqt_reconfigure" name="rqt_reconfigure" />
 
+  <!-- dynamic reconfigure nodes -->
+  <node pkg="cybathlon_auto_reconfigure" type="cybathlon_auto_reconfigure_node" name="cybathlon_auto_reconfigure" output="screen" >
+    <param name="~folder" value="$(find cybathlon_auto_reconfigure)"/>
+  </node>
 
-
-    <!--  filter chain  -->
+  <!--  filter chain  -->
 	<rosparam command="load" file="$(find cybathlon_eog)/cfg/bandPassCybathlon.yaml"/>
 	<node name="filterchain_node" pkg="rosneuro_filters" type="filterchain_node" output="screen" >
 		<param name="configname" value="ButterworthBandPass" />
