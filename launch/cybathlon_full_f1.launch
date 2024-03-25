@@ -1,0 +1,97 @@
+<?xml version="1.0"?>
+<launch>
+	
+	<arg name="subject"              default='f1'/>
+	<arg name="task"                 default="mi_rhlh"/>
+	<arg name="modality"             default='control'/>
+	<arg name="thresholds"           default='[0.7, 0.63]'/>
+	<arg name="classes"              default='[770, 769]'/>
+	<arg name="cmdevents"		  default='[6001, 6002]'/>
+	<arg name="alpha"		  default='0.985'/>
+	
+	<arg name="extra"     	          default=""/>
+	<arg name="game_address"         default='147.162.98.47'/>
+	<arg name="game_port"            default='59075'/>	
+		
+	<!-- Node parameters -->
+	<rosparam command="load" file="$(find cybathlon_launchers)/launch/cybathlon_game.yaml" />
+		
+	<!-- acquisition arguments -->
+		<arg name="plugin"               default='rosneuro::EGDDevice'/>
+		<arg name="devarg"               default='gtec'/>
+		<arg name="framerate"            default='16'/>
+		<arg name="samplerate"           default='512'/>
+			
+	<!-- recorder -->
+		<arg name="autostart"            default='true'/>
+		<arg name="filepath"             default='$(env HOME)/cybathlon/rosneuro_data' />
+
+	<!-- processing arguments -->
+		<arg name="lap_path"            default='$(env HOME)/cybathlon/rosneuro_data/laplacian/laplacian16.dat'/>
+		<arg name="decoder_path"        default='$(env HOME)/cybathlon/rosneuro_data/classifiers/f1_rhlh_20231003.smr.dat'/>
+		<arg name="n_channels"          default='16'/>
+
+	<!-- control framework arguments -->
+		<arg name="integratorplugin"    default="rosneuro::integrator::Exponential"/>
+	
+	<!-- Protocol parameters -->
+		<rosparam param="/protocol/subject"	 subst_value="True">$(arg subject)</rosparam>
+		<rosparam param="/protocol/modality" subst_value="True">$(arg modality)</rosparam>
+		<rosparam param="/protocol/task"	 subst_value="True">$(arg task)</rosparam>
+		<rosparam param="/protocol/extra"	 subst_value="True">$(arg extra)</rosparam>
+
+	<!-- aquisition node -->
+		<node name="acquisition" pkg="rosneuro_acquisition" type="acquisition" output="screen" >
+			<param name="~plugin" 	  value="$(arg plugin)"/>
+			<param name="~devarg" 	  value="$(arg devarg)"/>
+			<param name="~samplerate" value="$(arg samplerate)"/>
+			<param name="~framerate"  value="$(arg framerate)"/>
+		</node>
+	
+	<!-- recorder node -->
+		<node name="recorder" pkg="rosneuro_recorder" type="recorder" >
+			<param name="~autostart" value="$(arg autostart)"/>
+			<param name="~filepath" value="$(arg filepath)"/>
+		</node>
+  
+	<!-- processing node -->
+		<node name="smrbci" pkg="rosneuro_processing" type="test_smrbci" output="screen">
+			<param name="~lap_path" value="$(arg lap_path)"/>
+			<param name="~decoder_path" value="$(arg decoder_path)"/>
+			<param name="~n_channels" value="$(arg n_channels)"/>
+		</node>
+
+	<!-- integrator node -->
+		<node name="integrator" pkg="rosneuro_integrator" type="integrator" output="screen">
+		
+			<rosparam param="plugin" subst_value="True">$(arg integratorplugin)</rosparam>
+			<param name="alpha" value="$(arg alpha)"/>
+			<remap from="/smr/neuroprediction" to="/smrbci/neuroprediction"/>
+			<remap from="/integrated" to="/integrator/neuroprediction"/>
+		</node> 
+
+	<!-- Feedback wheel -->
+	<node pkg="cybathlon_feedback" type="doublethresholdwheel" name="cybathlon_feedback">
+		<rosparam param="classes" subst_value="True">$(arg classes)</rosparam>
+	</node>
+
+	<!-- Navigation controller -->
+	<node pkg="cybathlon_game_controllers" type="controller_navigation_orientation" name="controller_navigation_orientation" output="screen" >
+		<rosparam param="classes" subst_value="True">$(arg classes)</rosparam>
+		<rosparam param="thresholds" subst_value="True">$(arg thresholds)</rosparam>
+	</node>
+	
+	<!-- Cursor controller -->
+	<node pkg="cybathlon_game_controllers" type="controller_cursor_centerout" name="controller_cursor_centerout" output="screen" >
+		<rosparam param="cmdevents" subst_value="True">$(arg cmdevents)</rosparam>
+	</node>
+
+	<!-- Interface to the game -->
+	<node pkg="rosneuro_cybathlon_interface" type="gameinterface" name="gameinterface" output="screen" >
+	<param name="~game_address" value="$(arg game_address)"/>
+	<param name="~game_port"  	value="$(arg game_port)"/>
+	</node> 
+
+	<node pkg="rqt_reconfigure" type="rqt_reconfigure" name="rqt_reconfigure" output="screen" />
+
+</launch>

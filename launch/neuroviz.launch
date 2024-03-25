@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<launch>
+	<!-- acquisition arguments -->
+		<arg name="plugin" default='rosneuro::EGDDevice'/>
+		<arg name="devarg" default='gtec'/>  <!-- The real device -->
+		<!--<arg name="devarg"     default='/home/neurorobotics/cybathlon/test_gdf/s3_expo_test.gdf'/> -->		<!-- a test file -->
+		<arg name="framerate"  default='16'/>
+		<arg name="samplerate" default='512'/>
+
+	
+  <!-- protocol arguments -->
+		<arg name="subject"   default="s3"/> <!-- This is Piero's code-->
+		<arg name="modality"  default="control"/>
+		<arg name="task"      default="mi_bhbf"/>
+		<arg name="extra"     default=""/>
+
+	<!-- Protocol parameters -->
+		<rosparam param="/protocol/subject"	 subst_value="True">$(arg subject)</rosparam>
+		<rosparam param="/protocol/modality" subst_value="True">$(arg modality)</rosparam>
+		<rosparam param="/protocol/task"	 subst_value="True">$(arg task)</rosparam>
+		<rosparam param="/protocol/extra"	 subst_value="True">$(arg extra)</rosparam>
+
+
+
+	
+	<!-- ROS-Neuro pipeline -->
+	<!-- Aquisition of the BMI signals -->
+	<node name="acquisition" pkg="rosneuro_acquisition" type="acquisition" >
+		<param name="~plugin" 	  value="$(arg plugin)"/>
+		<param name="~devarg" 	  value="$(arg devarg)"/>
+		<param name="~samplerate" value="$(arg samplerate)"/>
+		<param name="~framerate"  value="$(arg framerate)"/>
+	</node>
+	
+	
+  <!-- Visualizer of the BMI signal (not needed) -->
+  <node name="neuroviz" pkg="rosneuro_visualizer" type="neuroviz" /> 
+
+	
+
+</launch>
