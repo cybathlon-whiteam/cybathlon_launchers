@@ -1,0 +1,38 @@
+cybathlon_feedback:
+    Wheelchair:
+        soft_threshold_left:  0.75
+        soft_threshold_right:  0.75
+        hard_threshold_left:  0.9
+        hard_threshold_right:  0.9
+        reset_on_soft: false
+        reset_on_hard: false
+
+    ScreenCursor:
+        soft_threshold_left:  0.7
+        soft_threshold_right:  0.7
+        hard_threshold_left:  0.8
+        hard_threshold_right:  0.8
+        reset_on_soft: true
+        reset_on_hard: false
+
+    RoboticArm:
+        soft_threshold_left:  0.7
+        soft_threshold_right:  0.7
+        hard_threshold_left:  0.9
+        hard_threshold_right:  0.9
+        reset_on_soft: false
+        reset_on_hard: true
+
+controller_navigation_orientation:
+        max_linear_velocity:  0.5
+        max_angular_velocity: 0.3
+        forward_sector: 0.5
+
+controller_cursor_centerout:
+        linear:  0.5
+        angular: 0.3
+        clockwise: true
+        extension: 1.0
+        selection: 5.0
+        autoselection: true
+        autoselection_period: 2.0

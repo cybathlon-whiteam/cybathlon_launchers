@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<launch>
+	
+	<arg name="classes"			default='[769, 770]'/>	
+	<arg name="thresholds"		default='[0.7, 0.7]'/>	
+	<arg name="cmdevents"		default='[6001, 6002]'/>	
+		
+	<arg name="game_address" 	default='10.0.2.15'/>
+	<arg name="game_port" 		default='59075'/>
+	
+	<!-- Node parameters -->
+	<rosparam command="load" file="$(find cybathlon_launchers)/launch/cybathlon_game.yaml" />
+
+	<!-- Feedback wheel -->
+	<node pkg="cybathlon_feedback" type="doublethresholdwheel" name="cybathlon_feedback">
+		<rosparam param="classes" subst_value="True">$(arg classes)</rosparam>
+	</node>
+
+	<!-- Navigation controller -->
+	<node pkg="cybathlon_game_controllers" type="controller_navigation_orientation" name="controller_navigation_orientation" output="screen" >
+		<rosparam param="classes" subst_value="True">$(arg classes)</rosparam>
+		<rosparam param="thresholds" subst_value="True">$(arg thresholds)</rosparam>
+	</node>
+	
+	<!-- Cursor controller -->
+	<node pkg="cybathlon_game_controllers" type="controller_cursor_centerout" name="controller_cursor_centerout" output="screen" >
+		<rosparam param="cmdevents" subst_value="True">$(arg cmdevents)</rosparam>
+	</node>
+
+	<!-- Interface to the game -->
+	<node pkg="rosneuro_cybathlon_interface" type="gameinterface" name="gameinterface" output="screen" >
+	<param name="~game_address" value="$(arg game_address)"/>
+	<param name="~game_port"  	value="$(arg game_port)"/>
+	</node> 
+
+	<node pkg="rqt_reconfigure" type="rqt_reconfigure" name="rqt_reconfigure" output="screen" />
+
+</launch>
