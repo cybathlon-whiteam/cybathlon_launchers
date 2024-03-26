@@ -34,5 +34,5 @@ controller_cursor_centerout:
         clockwise: true
         extension: 1.0
         selection: 6.0
+        press:     2.0
         autoselection: true
-        autoselection_period: 2.0
