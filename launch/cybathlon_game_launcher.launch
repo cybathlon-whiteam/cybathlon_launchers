@@ -4,7 +4,8 @@
 	<arg name="classes"			default='[769, 770]'/>	
 	<arg name="thresholds"		default='[0.7, 0.7]'/>	
 	<arg name="cmdevents"		default='[6001, 6002]'/>	
-		
+
+	<arg name="with_game"       default='True' />
 	<arg name="game_address" 	default='10.0.2.15'/>
 	<arg name="game_port" 		default='59075'/>
 	
@@ -28,7 +29,7 @@
 	</node>
 
 	<!-- Interface to the game -->
-	<node pkg="rosneuro_cybathlon_interface" type="gameinterface" name="gameinterface" output="screen" >
+	<node pkg="rosneuro_cybathlon_interface" type="gameinterface" name="gameinterface" if="$(arg with_game)" output="screen" >
 	<param name="~game_address" value="$(arg game_address)"/>
 	<param name="~game_port"  	value="$(arg game_port)"/>
 	</node> 

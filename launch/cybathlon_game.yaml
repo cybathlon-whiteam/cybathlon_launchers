@@ -36,3 +36,4 @@ controller_cursor_centerout:
         selection: 6.0
         press:     2.0
         autoselection: true
+        command_on_soft: false
