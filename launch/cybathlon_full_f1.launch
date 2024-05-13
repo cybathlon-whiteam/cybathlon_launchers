@@ -8,13 +8,20 @@
 	<arg name="classes"              default='[770, 769]'/>
 	<arg name="cmdevents"		  default='[6001, 6002]'/>
 	<arg name="alpha"		  default='0.985'/>
+	<arg name="rejection" 		   default='0.6465'/>
 	
 	<arg name="extra"     	          default=""/>
 	<arg name="game_address"         default='147.162.98.47'/>
-	<arg name="game_port"            default='59075'/>	
+	<arg name="game_port"            default='59075'/>
+	
+	<!--   cybathlon_eog -->
+	<arg name="eog_left_channel"   default='1'/>
+	<arg name="eog_right_channel"  default='1'/>	
 		
 	<!-- Node parameters -->
 	<rosparam command="load" file="$(find cybathlon_launchers)/launch/cybathlon_game.yaml" />
+	 <!--  filter chain  -->
+	<rosparam command="load" file="$(find cybathlon_eog)/cfg/bandPassCybathlon.yaml"/>
 		
 	<!-- acquisition arguments -->
 		<arg name="plugin"               default='rosneuro::EGDDevice'/>
@@ -66,6 +73,7 @@
 		
 			<rosparam param="plugin" subst_value="True">$(arg integratorplugin)</rosparam>
 			<param name="alpha" value="$(arg alpha)"/>
+			<rosparam param="rejection" subst_value="True">$(arg rejection)</rosparam>
 			<remap from="/smr/neuroprediction" to="/smrbci/neuroprediction"/>
 			<remap from="/integrated" to="/integrator/neuroprediction"/>
 		</node> 
@@ -85,6 +93,11 @@
 	<node pkg="cybathlon_game_controllers" type="controller_cursor_centerout" name="controller_cursor_centerout" output="screen" >
 		<rosparam param="cmdevents" subst_value="True">$(arg cmdevents)</rosparam>
 	</node>
+	
+	<!-- Robotic arm controller -->
+	<node pkg="cybathlon_game_controllers" type="controller_roboticarm_compass" name="controller_roboticarm_compass" output="screen" >
+		<rosparam param="cmdevents" subst_value="True">$(arg cmdevents)</rosparam>
+	</node>
 
 	<!-- Interface to the game -->
 	<node pkg="rosneuro_cybathlon_interface" type="gameinterface" name="gameinterface" output="screen" >
@@ -93,5 +106,15 @@
 	</node> 
 
 	<node pkg="rqt_reconfigure" type="rqt_reconfigure" name="rqt_reconfigure" output="screen" />
+	
+	<!--  filter chain  -->
+	<node name="filterchain_node" pkg="rosneuro_filters" type="filterchain_node" output="screen" >
+		<param name="configname" value="ButterworthBandPass" />
+	</node>
+
+	 <node pkg="cybathlon_eog" type="cybathlonEog_node" name="cybathlonEog_node" output="screen">
+		<param name="~eog_left_channel"  	value="$(arg eog_left_channel)"/>
+		<param name="~eog_right_channel"  	value="$(arg eog_right_channel)"/>
+	</node> 
 
 </launch>
