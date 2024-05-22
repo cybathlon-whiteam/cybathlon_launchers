@@ -40,19 +40,6 @@
 		<param name="/protocol/extra" value="positive" if="$(arg positive)"></param>
 
 
-	<!-- Remapping topic -->
-	<!-- rosneuro_processing -->
-	<remap from="/smrbci/neuroprediction" to="/smr/neuroprediction/raw"/>
-
-	<!-- integrator -->
-	<remap from="/smr/neuroprediction" to="/smr/neuroprediction/raw" unless="$(arg positive)"/>
-	<remap from="/smr/neuroprediction" to="/smr/neuroprediction/positive" if="$(arg positive)"/>
-	<remap from="/integrated" to="/smr/neuroprediction/integrated"/>
-
-	<!-- feedback -->
-	<remap from="/integrator/neuroprediction" to="/smr/neuroprediction/integrated" />
-
-
 	<!-- aquisition node -->
 	<node name="acquisition" pkg="rosneuro_acquisition" type="acquisition" output="screen" >
 		<param name="~plugin" 	  value="$(arg plugin)"/>

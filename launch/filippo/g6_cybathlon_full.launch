@@ -74,8 +74,11 @@
 			<rosparam param="plugin" subst_value="True">$(arg integratorplugin)</rosparam>
 			<param name="alpha" value="$(arg alpha)"/>
 			<rosparam param="rejection" subst_value="True">$(arg rejection)</rosparam>
+			
+			<!-- not needed any longer 
 			<remap from="/smr/neuroprediction" to="/smrbci/neuroprediction"/>
 			<remap from="/integrated" to="/integrator/neuroprediction"/>
+			-->
 		</node> 
 
 	<!-- Feedback wheel -->
