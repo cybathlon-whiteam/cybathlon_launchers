@@ -114,7 +114,7 @@
 		<param name="configname" value="ButterworthBandPass" />
 	</node>
 
-	 <node pkg="cybathlon_eog" type="eog_detector" name="eog_detector" output="screen">
+	 <node pkg="cybathlon_eog" type="cybathlonEog_node" name="cybathlonEog_node" output="screen">
 		<param name="~eog_left_channel"  	value="$(arg eog_left_channel)"/>
 		<param name="~eog_right_channel"  	value="$(arg eog_right_channel)"/>
 	</node> 

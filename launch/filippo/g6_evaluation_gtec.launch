@@ -23,7 +23,7 @@
 			
 	<!-- processing arguments -->
 		<arg name="lap_path"      default='$(env HOME)/cybathlon/rosneuro_data/laplacian/laplacian16.dat'/>
-		<arg name="decoder_path"  default='$(env HOME)/cybathlon/rosneuro_data/classifiers/g6_bhbf_20240517.smr.dat'/>
+		<arg name="decoder_path"  default='$(env HOME)/cybathlon/rosneuro_data/classifiers/g6_bhbf_20240531.smr.dat'/>
 		<arg name="n_channels"    default='16'/>
 
 	<!-- control framework arguments -->

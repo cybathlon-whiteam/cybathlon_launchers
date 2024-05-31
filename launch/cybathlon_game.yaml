@@ -1,6 +1,6 @@
 cybathlon_feedback:
     Wheelchair:
-        soft_threshold_left:  0.63
+        soft_threshold_left:  0.62
         soft_threshold_right:  0.56
         hard_threshold_left:  0.76
         hard_threshold_right:  0.73
