@@ -37,3 +37,9 @@ controller_cursor_centerout:
         press:     2.0
         autoselection: true
         command_on_soft: false
+        
+controller_roboticarm_compass_inverted:
+        linear:  0.5
+        angular: 0.3
+        clockwise: true
+       
