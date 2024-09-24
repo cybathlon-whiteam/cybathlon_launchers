@@ -6,7 +6,7 @@
 		<arg name="task"      	 default="mi_rhlh"/>
 		<arg name="modality" 	 default='evaluation'/>
 		<arg name="classes"      default='[770, 769]'/>
-		<arg name="trials"       default='[10, 10]'/>
+		<arg name="trials"       default='[5,5]'/>
 		<arg name="thresholds"   default='[0.7, 0.7]'/>
 		<arg name="extra"     	 default=""/>
 
